@@ -95,7 +95,7 @@ const Chatlist = () => {
           className="item"
           key={chat.chatId}
           onClick={() => handleSelect(chat)}
-          style={{ backgroundColor: chat?.isSeen ? "transparent" : "blue" }}
+          style={{ backgroundColor: chat?.isSeen ? "transparent" : "#3a3e85a5" }}
         >
           <img
             src={

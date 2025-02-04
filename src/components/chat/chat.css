@@ -1,10 +1,11 @@
 .chat {
-  flex: 2;
+  flex: 1;
   border-left: 1px solid #dddddd35;
   border-right: 1px solid #dddddd35;
   display: flex;
   flex-direction: column;
 
+  width: auto;
   height: 100%;
   .top {
     padding: 20px;
@@ -68,7 +69,8 @@
     gap: 20px;
 
     .message {
-      max-width: 70%;
+      align-self: flex-start;
+      max-width: 30%;
       display: flex;
       gap: 20px;
 
@@ -76,7 +78,7 @@
         align-self: flex-end;
         .texts {
           p {
-            background-color: #413a78a3;
+            background-color: #413a7865;
           }
         }
       }
@@ -88,7 +90,7 @@
       }
       .texts {
         flex: 1;
-        display: flex;
+        display:fle;
         flex-direction: column;
         gap: 5px;
         color: white;
@@ -113,7 +115,6 @@
   }
 
   .bottom {
-    margin-top: auto;
     padding: 20px;
     display: flex;
     align-items: center;
@@ -121,25 +122,22 @@
     border-top: 1px solid #dddddd35;
     gap: 20px;
 
-    .icons {
-      display: flex;
-      gap: 20px;
-    }
-
+    
     img {
-      width: 20px;
-      height: 20px;
+      width: 3vh;
+      height: 3vh;
       cursor: pointer;
     }
     input {
-      flex: 1;
+      max-width: 80%;
+      flex:01;
       background-color: #1f194bb1;
       border: none;
       outline: none;
       color: white;
       padding: 10px;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 12px;
+      font-size: 14px;
       &:disabled {
         cursor: not-allowed;
       }
@@ -154,7 +152,7 @@
       }
     }
     .sendButton {
-      background-color: #5183fe;
+      background-color: #120990c0;
       color: white;
       padding: 10px 20px;
       border: none;
@@ -162,7 +160,7 @@
       cursor: pointer;
 
       &:disabled {
-        background-color: #5182fe3d;
+        background-color: #6551fe3d;
         cursor: not-allowed;
       }
     }

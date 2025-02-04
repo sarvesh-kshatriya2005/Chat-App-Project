@@ -7,6 +7,7 @@ const List = () => {
       <UserInfo/>
       <Chatlist />
     </div>
+
   )
 }
 

@@ -34,7 +34,6 @@ const UserInfo = () => {
         <h2>{currentUser.username}</h2>
       </div>
       <div className="icons">
-        <img src="./edit.png" alt="edit" />
         <img
           src="./more.png"
           alt="more options"

@@ -98,6 +98,7 @@ const Chat = () => {
 
   return (
     <div className="chat">
+
       <div className="top">
         <div className="user">
           <img src={user?.avatar || "./avatar.png"} alt="avatar" />
@@ -107,9 +108,6 @@ const Chat = () => {
           </div>
         </div>
         <div className="icons">
-          <img src="./phone.png" alt="phone" />
-          <img src="./video.png" alt="video" />
-          <img src="./info.png" alt="info" />
         </div>
       </div>
 
@@ -127,6 +125,7 @@ const Chat = () => {
         })}
         <div ref={endRef}></div>
       </div>
+
 
       <div className="bottom">
         <input
