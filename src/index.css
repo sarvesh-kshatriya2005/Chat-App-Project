@@ -17,7 +17,7 @@ body{
 .container{ 
   width:85vw;
   height: 93vh;
-  background-color: #262d50cd;
+  background-color: #0d1645af;
   border-radius: 18px;
   backdrop-filter: blur(19px) saturate(180%);
   border-color: 1px solid #030406cd;
