@@ -1,0 +1,58 @@
+.userInfo {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .user img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .icons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .icons img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  .options {
+    position: absolute;
+    top: 60px; /* Position it below the user info */
+    right: 0;
+    background-color: #423c8aa1;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .options button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #f414147e;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+  
+  .options button:hover {
+    background-color: #ff0000;
+  }
+  
