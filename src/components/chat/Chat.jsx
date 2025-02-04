@@ -1,29 +1,24 @@
 import { useEffect, useState, useRef } from "react";
+import { signOut } from "firebase/auth"; // Import signOut for logout
+import { auth } from "../login/lib/firebase"; // Import Firebase auth
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  onSnapshot,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../login/lib/firebase";
 import { useChatStore } from "../login/lib/chatStore";
 import { useUserStore } from "../login/lib/userStore";
 
 const Chat = () => {
   const [chat, setChat] = useState();
-  const [open, setOpen] = useState(false);
+  const [openEmoji, setOpenEmoji] = useState(false);
   const [text, setText] = useState("");
+  const [showOptions, setShowOptions] = useState(false); // For toggling the options
+  const endRef = useRef(null);
 
   const { currentUser } = useUserStore();
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
 
-  const endRef = useRef(null);
-
-  // Auto-scroll to the last message when chat updates
+  // Auto-scroll to the latest message
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
@@ -34,14 +29,20 @@ const Chat = () => {
   }, [chatId]);
 
   // Handle emoji selection
-  const handleEmoji = (e) => {
-    setText((prev) => prev + e.emoji);
-    setOpen(false);
+  const handleEmoji = (emojiData) => {
+    setText((prev) => prev + emojiData.emoji);
   };
 
-  // Send Message Function
+  // Handle sending a message
   const handleSend = async (e) => {
     e?.preventDefault();
+
+    // Prevent sending message if either user is blocked
+    if (isCurrentUserBlocked || isReceiverBlocked) {
+      console.log("You or the receiver is blocked. Cannot send message.");
+      return;
+    }
+
     if (!text.trim()) return;
 
     if (!currentUser || !currentUser.id) {
@@ -71,10 +72,6 @@ const Chat = () => {
         const userChatRef = doc(db, "userchats", id);
         const userChatSnapShot = await getDoc(userChatRef);
 
-        if (!userChatSnapShot.exists()) {
-          await setDoc(userChatRef, { chats: [] });
-        }
-
         if (userChatSnapShot.exists()) {
           const userChatsData = userChatSnapShot.data();
           const chatIndex = userChatsData.chats.findIndex((c) => c.chatId === chatId);
@@ -96,9 +93,33 @@ const Chat = () => {
     }
   };
 
+  // Handle Block User
+  const handleBlockUser = async () => {
+    try {
+      const userRef = doc(db, "users", user.id); // Reference to the user to block
+      await updateDoc(userRef, {
+        blocked: arrayUnion(currentUser.id), // Add current user to blocked list
+      });
+      console.log(`User ${user.username} has been blocked.`);
+    } catch (err) {
+      console.error("Error blocking user:", err);
+    }
+  };
+
+  // Handle Logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Sign out the user
+      console.log("User logged out successfully.");
+      window.location.reload(); // Refresh to go back to login page (or redirect as per your logic)
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
+  };
+
   return (
     <div className="chat">
-
+      {/* Chat Header */}
       <div className="top">
         <div className="user">
           <img src={user?.avatar || "./avatar.png"} alt="avatar" />
@@ -107,16 +128,30 @@ const Chat = () => {
             <p>{user?.description || "No description available"}</p>
           </div>
         </div>
-        <div className="icons">
+
+        {/* More Options Button */}
+        <div className="more-options" onClick={() => setShowOptions(!showOptions)}>
+          <img src="./more.png" alt="More Options" />
         </div>
       </div>
 
+      {/* Options Popup */}
+      {showOptions && (
+        <div className="options-popup">
+          <button onClick={handleBlockUser}>Block User</button>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      )}
+
+      {/* Chat Messages */}
       <div className="center">
         {chat?.messages?.map((message, index) => {
           const isOwnMessage = message?.senderId === currentUser?.id;
+          const senderAvatar = isOwnMessage ? currentUser?.avatar : user?.avatar;
+
           return (
             <div key={index} className={isOwnMessage ? "message own" : "message"}>
-              <img src="./avatar.png"alt="avatar" />
+              <img src={senderAvatar || "./avatar.png"} alt="avatar" />
               <div className="texts">
                 <p>{message.text}</p>
               </div>
@@ -126,7 +161,7 @@ const Chat = () => {
         <div ref={endRef}></div>
       </div>
 
-
+      {/* Chat Input */}
       <div className="bottom">
         <input
           type="text"
@@ -136,9 +171,13 @@ const Chat = () => {
           onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
           disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
-        <div className="emoji">
-          <img src="./emoji.png" alt="emoji picker" onClick={() => setOpen((prev) => !prev)} />
-          {open && <EmojiPicker onEmojiClick={handleEmoji} />}
+        <div className="emoji-container">
+          <img src="./emoji.png" alt="emoji picker" onClick={() => setOpenEmoji((prev) => !prev)} className="emoji-icon"/>
+          {openEmoji && (
+            <div className="emoji-picker">
+              <EmojiPicker onEmojiClick={handleEmoji} />
+            </div>
+          )}
         </div>
         <button className="sendButton" onClick={handleSend} disabled={isCurrentUserBlocked || isReceiverBlocked}>
           Send

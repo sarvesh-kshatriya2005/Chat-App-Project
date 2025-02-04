@@ -4,33 +4,33 @@
   border-right: 1px solid #dddddd35;
   display: flex;
   flex-direction: column;
-
   width: auto;
   height: 100%;
+
   .top {
     padding: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #dddddd35;
-
+  
     .user {
       display: flex;
       align-items: center;
       gap: 20px;
-
+  
       img {
         width: 60px;
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
       }
-
+  
       .texts {
         display: flex;
         flex-direction: column;
         gap: 5px;
-
+  
         span {
           font-size: 18px;
           font-weight: bold;
@@ -42,24 +42,43 @@
         }
       }
     }
-    .icons {
-      display: flex;
-      gap: 20px;
-
+  
+    .more-options {
+      cursor: pointer;
       img {
-        width: 20px;
-        height: 20px;
+        width: 25px;
+        height: 25px;
       }
     }
-    input {
-      flex: 1;
-      background-color: #261772be;
-      border: none;
-      outline: none;
+  }
+  
+  .options-popup {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: rgba(53, 49, 149, 0.589);
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  
+    button {  
+      background-color: #120990c0;
       color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #791b26;
+      }
     }
   }
-
+  
   .center {
     padding: 20px;
     flex: 1;
@@ -70,7 +89,7 @@
 
     .message {
       align-self: flex-start;
-      max-width: 30%;
+      max-width: 80%;
       display: flex;
       gap: 20px;
 
@@ -78,7 +97,7 @@
         align-self: flex-end;
         .texts {
           p {
-            background-color: #413a7865;
+            background-color: #3e30ab9f;
           }
         }
       }
@@ -90,7 +109,7 @@
       }
       .texts {
         flex: 1;
-        display:fle;
+        display: fle;
         flex-direction: column;
         gap: 5px;
         color: white;
@@ -122,7 +141,6 @@
     border-top: 1px solid #dddddd35;
     gap: 20px;
 
-    
     img {
       width: 2.5vh;
       height: 2.5vh;
@@ -131,8 +149,8 @@
     input {
       margin-left: auto;
       max-width: 80%;
-      flex:01;
-      background-color: #1f194bb1;  
+      flex: 01;
+      background-color: #1f194bb1;
       border: none;
       outline: none;
       color: white;
@@ -143,16 +161,26 @@
         cursor: not-allowed;
       }
     }
-
-    .emoji {
+    .emoji-container {
       position: relative;
-      
-      .picker {
-        position: absolute;
-        bottom: 50px;
-        left: 0;
-      }
     }
+
+    .emoji-icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .emoji-picker {
+      position: absolute;
+      bottom: 50px;
+      right: 0;
+      z-index: 100;
+      background-color: rgba(59, 36, 141, 0.639);
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
     .sendButton {
       background-color: #120990c0;
       color: white;

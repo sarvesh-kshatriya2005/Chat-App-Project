@@ -1,5 +1,97 @@
-.list{
-    flex:0;
+/* Basic layout for .list container */
+.list {
     display: flex;
     flex-direction: column;
-}
+    flex-grow: 0;
+    padding: 16px;
+    position: relative;
+  }
+  
+  /* Responsive layout: Hide list container on mobile and show via button */
+  @media (max-width: 768px) {
+    .list {
+      display: none; /* Hide on mobile */
+    }
+  
+    .chatList {
+      display: block; /* Show chat list in mobile layout when button is clicked */
+      z-index: 1;
+    }
+  }
+ 
+.toggleButton {
+    align-self: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .toggleButton img {
+    width: 25px;
+    height: 25px;
+    transition: transform 0.3s ease;
+  }
+  
+  .chatList {
+    max-height: 500px; /* Set a max height to reserve space for the list */
+    overflow: hidden; /* Hide overflow when the list is collapsed */
+    transition: max-height 0.3s ease-in-out; /* Smooth transition */
+  }
+  
+  .chatList.hidden {
+    max-height: 0; /* Collapse the list by setting max-height to 0 */
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  
+  
+    
+  .chatList .item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .chatList .item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .chatList .item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .chatList .item .texts {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .chatList .item .texts span {
+    font-size: 16px;    
+    font-weight: bold;
+  }
+  
+  .chatList .item .texts p {
+    font-size: 14px;
+    color: #d1d0de;
+  }
+  
+  /* Styling for the button that opens the chat list */
+  .chatListButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none;
+    background-color: #1f194b;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+  }
+  
