@@ -1,66 +1,101 @@
-.login{
+/* Main styles for login page */
+.login {
     width: 100%;
+    flex: 3;
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 100px;
+    justify-content: center;
+    gap: 30px; /* Reduced gap for better compactness */
+    padding: 20px 0;
 
-    .item{
-        flex:1;
-        display: flex; 
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    
-    form{
+    .item {
+        flex: 1;
+        margin-top: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 20px;
+        gap: 15px; /* Reduced gap for better alignment */
     
-        input{
-            padding: 20px;
-            border: none;
-            outline: none;
-            background-color: rgba(33, 30, 75, 0.507);
-            color: white;
-            border-radius: 8px;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Reduced gap for better alignment */
+    
+            input {
+                padding: 15px; /* Slightly reduced padding for compactness */
+                border: none;
+                outline: none;
+                background-color: rgba(33, 30, 75, 0.507);
+                color: white;
+                border-radius: 8px;
+                font-size: 14px; /* Added font size for better legibility */
             }
-            label{
+
+            label {
                 width: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 cursor: pointer;
                 text-decoration: underline;
-                img{
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 10px;
-                    opacity: 0.8; 
-                }
+                font-size: 14px; /* Slightly smaller font size */
             }
-            button{
+
+            button {
                 width: 100%;
-                padding: 20px;
+                padding: 15px; /* Reduced padding to match other elements */
+                margin-bottom: 20px;
                 border: none;
-                background-color:rgba(24, 33, 134, 0.471);
+                background-color: rgba(24, 33, 134, 0.471);
                 color: white;
                 border-radius: 8px;
                 cursor: pointer;
-                font-weight: 500; 
+                font-weight: 500;
+                font-size: 16px; /* Adjusted for better readability */
 
-                &:disabled{
+                &:disabled {
                     background-color: rgba(24, 33, 134, 0.171);
                     cursor: not-allowed;
                 }
             }
         }
     }
-    .seprator{
+
+    .seprator {
         height: 80%;
-        width: 2px;
+        width: 4px;
+        border-radius: 40px;
         background-color: rgba(255, 255, 255, 0.507);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .login {
+        align-items: center;
+        flex: 1;
+        overflow: scroll;
+        flex-direction: column;
+        gap: 30px; /* Adjusted gap for better spacing on smaller screens */
+        height: auto;
+        padding: 20px;
+        
+        .seprator {
+            height: 4px;
+            width: 80%;
+            border-radius: 40px;
+            margin: 15px 0; /* Reduced margin */
+        }
+    }
+
+    .item {
+        width: 90%; /* More compact form container */
+        padding: 15px; /* Reduced padding */
+    }
+
+    input, button {
+        width: 100%;
+        font-size: 16px; /* Font size adjustment for mobile */
     }
 }

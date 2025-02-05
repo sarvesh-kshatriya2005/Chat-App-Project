@@ -3,7 +3,14 @@ import { signOut } from "firebase/auth"; // Import signOut for logout
 import { auth } from "../login/lib/firebase"; // Import Firebase auth
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
-import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  arrayRemove,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../login/lib/firebase";
 import { useChatStore } from "../login/lib/chatStore";
 import { useUserStore } from "../login/lib/userStore";
@@ -12,13 +19,29 @@ const Chat = () => {
   const [chat, setChat] = useState();
   const [openEmoji, setOpenEmoji] = useState(false);
   const [text, setText] = useState("");
-  const [showOptions, setShowOptions] = useState(false); // For toggling the options
+  const [showOptions, setShowOptions] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  
+  const { currentUser } = useUserStore();
+  const { chatId, user } = useChatStore();
+  
   const endRef = useRef(null);
 
-  const { currentUser } = useUserStore();
-  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
+  // ✅ Fetch & Listen for Real-Time Block Status
+  useEffect(() => {
+    if (!user?.id || !currentUser?.id) return;
 
-  // Auto-scroll to the latest message
+    const userRef = doc(db, "users", currentUser.id);
+    const unSub = onSnapshot(userRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setIsBlocked(docSnap.data().blocked?.includes(user.id));
+      }
+    });
+
+    return () => unSub();
+  }, [user?.id, currentUser?.id]);
+
+  // ✅ Auto-scroll to latest message
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
@@ -28,22 +51,15 @@ const Chat = () => {
     return () => unSub();
   }, [chatId]);
 
-  // Handle emoji selection
+  // ✅ Handle emoji selection
   const handleEmoji = (emojiData) => {
     setText((prev) => prev + emojiData.emoji);
   };
 
-  // Handle sending a message
+  // ✅ Handle sending a message (prevent if blocked)
   const handleSend = async (e) => {
     e?.preventDefault();
-
-    // Prevent sending message if either user is blocked
-    if (isCurrentUserBlocked || isReceiverBlocked) {
-      console.log("You or the receiver is blocked. Cannot send message.");
-      return;
-    }
-
-    if (!text.trim()) return;
+    if (!text.trim() || isBlocked) return;
 
     if (!currentUser || !currentUser.id) {
       console.error("Current user is not defined");
@@ -56,10 +72,10 @@ const Chat = () => {
       createdAt: new Date(),
     };
 
-    setText(""); // Instantly clear the input field after sending
+    setText(""); // Instantly clear input
 
     try {
-      // Update the chat messages in Firebase
+      // ✅ Save message in Firebase
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion(messageData),
       });
@@ -93,25 +109,38 @@ const Chat = () => {
     }
   };
 
-  // Handle Block User
+  // ✅ Handle Block/Unblock User
   const handleBlockUser = async () => {
+    if (!user) return;
+
+    const userRef = doc(db, "users", currentUser.id);
+
     try {
-      const userRef = doc(db, "users", user.id); // Reference to the user to block
-      await updateDoc(userRef, {
-        blocked: arrayUnion(currentUser.id), // Add current user to blocked list
-      });
-      console.log(`User ${user.username} has been blocked.`);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.data();
+
+      if (userData.blocked.includes(user.id)) {
+        await updateDoc(userRef, {
+          blocked: arrayRemove(user.id),
+        });
+        setIsBlocked(false);
+      } else {
+        await updateDoc(userRef, {
+          blocked: arrayUnion(user.id),
+        });
+        setIsBlocked(true);
+      }
     } catch (err) {
-      console.error("Error blocking user:", err);
+      console.error("Error toggling block:", err);
     }
   };
-
-  // Handle Logout
+  
+  // ✅ Handle Logout
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Sign out the user
+      await signOut(auth);
       console.log("User logged out successfully.");
-      window.location.reload(); // Refresh to go back to login page (or redirect as per your logic)
+      window.location.reload(); // Refresh page to go back to login
     } catch (err) {
       console.error("Error logging out:", err);
     }
@@ -138,7 +167,9 @@ const Chat = () => {
       {/* Options Popup */}
       {showOptions && (
         <div className="options-popup">
-          <button onClick={handleBlockUser}>Block User</button>
+          <button onClick={handleBlockUser}>
+            {isBlocked ? "Unblock User" : "Block User"}
+          </button>
           <button onClick={handleLogout}>Logout</button>
         </div>
       )}
@@ -165,11 +196,11 @@ const Chat = () => {
       <div className="bottom">
         <input
           type="text"
-          placeholder={isCurrentUserBlocked || isReceiverBlocked ? "Can't send messages" : "Type a message..."}
+          placeholder={isBlocked ? "Can't send messages" : "Type a message..."}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
-          disabled={isCurrentUserBlocked || isReceiverBlocked}
+          disabled={isBlocked}
         />
         <div className="emoji-container">
           <img src="./emoji.png" alt="emoji picker" onClick={() => setOpenEmoji((prev) => !prev)} className="emoji-icon"/>
@@ -179,7 +210,7 @@ const Chat = () => {
             </div>
           )}
         </div>
-        <button className="sendButton" onClick={handleSend} disabled={isCurrentUserBlocked || isReceiverBlocked}>
+        <button className="sendButton" onClick={handleSend} disabled={isBlocked}>
           Send
         </button>
       </div>

@@ -17,65 +17,56 @@ const Chatlist = () => {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const unSub = onSnapshot(
-      doc(db, "userchats", currentUser.id),
-      async (res) => {
-        const items = res.data()?.chats || [];
+    const unSub = onSnapshot(doc(db, "userchats", currentUser.id), async (res) => {
+      const items = res.data()?.chats || [];
 
-        const promises = items
-          .filter((item) => item.receiverId)
-          .map(async (item) => {
-            const userDocRef = doc(db, "users", item.receiverId);
-            const userDocSnap = await getDoc(userDocRef);
-            const user = userDocSnap.exists() ? userDocSnap.data() : null;
-            return { ...item, user };
-          });
+      const promises = items
+        .filter((item) => item.receiverId) // Only include chats with a valid receiver
+        .map(async (item) => {
+          const userDocRef = doc(db, "users", item.receiverId);
+          const userDocSnap = await getDoc(userDocRef);
+          const user = userDocSnap.exists() ? userDocSnap.data() : null;
+          return { ...item, user };
+        });
 
-        const chatData = await Promise.all(promises);
-        setChats(
-          chatData.sort((a, b) => {
-            const dateA = new Date(a.updatedAt);
-            const dateB = new Date(b.updatedAt);
-            return dateB - dateA;
-          })
-        );
-      }
-    );
+      const chatData = await Promise.all(promises);
+      setChats(
+        chatData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      );
+    });
 
-    return () => {
-      unSub();
-    };
+    return () => unSub();
   }, [currentUser?.id]);
 
   const handleSelect = async (chat) => {
-    const userChats = chats.map((item) => {
-      const { user, ...rest } = item;
-      return rest;
-    });
-
+    const userChats = chats.map(({ user, ...rest }) => rest);
     const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
-    userChats[chatIndex].isSeen = true;
 
-    const userChatRef = doc(db, "userchats", currentUser.id);
-    try {
-      await updateDoc(userChatRef, {
-        chats: userChats,
-      });
-      changeChat(chat.chatId, chat.user);
-    } catch (err) {
-      console.log(err);
+    if (chatIndex >= 0) {
+      userChats[chatIndex].isSeen = true;
+
+      const userChatRef = doc(db, "userchats", currentUser.id);
+      try {
+        await updateDoc(userChatRef, { chats: userChats });
+        changeChat(chat.chatId, chat.user);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
-  const filteredChats = chats.filter((c) =>
-    c.user.username.toLowerCase().includes(input.toLowerCase())
+  // ✅ Filter chats: exclude blocked users & apply search filter
+  const filteredChats = chats.filter(
+    (c) =>
+      !c.user?.blocked?.includes(currentUser.id) && // Exclude blocked users
+      c.user.username.toLowerCase().includes(input.toLowerCase()) // Apply search filter
   );
 
   return (
     <div className="chatList">
       <div className="search">
         <div className="searchBar">
-          <img src="/search.png" alt="search Image" />
+          <img src="/search.png" alt="Search" />
           <input
             type="text"
             placeholder="Search"
@@ -84,12 +75,16 @@ const Chatlist = () => {
         </div>
         <img
           src={addMode ? "./minus.png" : "./plus.png"}
-          alt="plus image"
+          alt="Add User"
           className="add"
-          onClick={() => setAddMode((prev) => !prev)}
+          onClick={() => {
+            if (!currentUser) return;
+            setAddMode((prev) => !prev);
+          }}
         />
       </div>
 
+      {/* ✅ Display chats */}
       {filteredChats.map((chat) => (
         <div
           className="item"
@@ -99,17 +94,17 @@ const Chatlist = () => {
         >
           <img
             src={
-              chat.user.blocked.includes(currentUser.id)
+              chat.user?.blocked?.includes(currentUser.id)
                 ? "./avatar.png"
                 : chat.user?.avatar || "./avatar.png"
             }
-            alt="avatar image"
+            alt="User Avatar"
           />
           <div className="texts">
             <span>
-              {chat.user.blocked.includes(currentUser.id)
+              {chat.user?.blocked?.includes(currentUser.id)
                 ? "Blocked User"
-                : chat.user.username}
+                : chat.user?.username}
             </span>
             <p>{chat.lastMessage || "No message"}</p>
           </div>

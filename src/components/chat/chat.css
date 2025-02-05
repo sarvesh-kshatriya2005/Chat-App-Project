@@ -13,24 +13,24 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #dddddd35;
-  
+
     .user {
       display: flex;
       align-items: center;
       gap: 20px;
-  
+
       img {
         width: 60px;
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
       }
-  
+
       .texts {
         display: flex;
         flex-direction: column;
         gap: 5px;
-  
+
         span {
           font-size: 18px;
           font-weight: bold;
@@ -42,16 +42,17 @@
         }
       }
     }
-  
+
     .more-options {
       cursor: pointer;
       img {
         width: 25px;
+        margin-right: 10px;
         height: 25px;
       }
     }
   }
-  
+
   .options-popup {
     position: absolute;
     top: 60px;
@@ -64,21 +65,21 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-  
-    button {  
+
+    button {
       background-color: #120990c0;
       color: white;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-  
+
       &:hover {
         background-color: #791b26;
       }
     }
   }
-  
+
   .center {
     padding: 20px;
     flex: 1;
@@ -101,15 +102,17 @@
           }
         }
       }
+
       img {
         width: 30px;
         height: 30px;
         border-radius: 50%;
         object-fit: cover;
       }
+
       .texts {
         flex: 1;
-        display: fle;
+        display: flex;
         flex-direction: column;
         gap: 5px;
         color: white;
@@ -139,17 +142,17 @@
     align-items: center;
     justify-content: center;
     border-top: 1px solid #dddddd35;
-    gap: 20px;
+    gap: 10px;
 
     img {
       width: 2.5vh;
       height: 2.5vh;
       cursor: pointer;
     }
+
     input {
-      margin-left: auto;
-      max-width: 80%;
-      flex: 01;
+      margin-left: 10px; 
+      flex-grow: 1;
       background-color: #1f194bb1;
       border: none;
       outline: none;
@@ -157,10 +160,13 @@
       padding: 10px;
       border-radius: 12px;
       font-size: 14px;
+      min-width: 0;
+      max-width: 80%;
       &:disabled {
         cursor: not-allowed;
       }
     }
+
     .emoji-container {
       position: relative;
     }
@@ -175,7 +181,6 @@
       position: absolute;
       bottom: 50px;
       right: 0;
-      z-index: 100;
       background-color: rgba(59, 36, 141, 0.639);
       border-radius: 16px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -186,9 +191,10 @@
       color: white;
       padding: 10px 20px;
       border: none;
-      margin-right: auto;
+      margin: auto 10px auto 0;
       border-radius: 20px;
       cursor: pointer;
+      width: auto;
 
       &:disabled {
         background-color: #6551fe3d;
