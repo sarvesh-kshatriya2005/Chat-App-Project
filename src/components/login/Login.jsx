@@ -21,7 +21,7 @@ const Login = () => {
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
       // Create user document in Firestore without avatar
-      await setDoc(doc(db, "users", res.user.uid), {
+      await setDoc(doc(db, "users", res.user.uid), { 
         username,
         email,
         id: res.user.uid,
@@ -64,8 +64,8 @@ const Login = () => {
       <div className="item">
         <h2>Welcome Back</h2>
         <form onSubmit={handleLogin}>
-          <input type="email" placeholder="Email" name="email" />
-          <input type="password" placeholder="Password" name="password" />
+          <input type="email" placeholder="Email" name="email" autoComplete="username"/>
+          <input type="password" placeholder="Password" name="password" autoComplete="current-password"/>
           <button disabled={loading}>{loading ? "Loading..." : "Sign In"}</button>
         </form>
       </div>
@@ -74,8 +74,8 @@ const Login = () => {
         <h2>Create account</h2>
         <form onSubmit={handleRegister}>
           <input type="text" placeholder="Username" name="username" />
-          <input type="email" placeholder="Email" name="email" />
-          <input type="password" placeholder="Password" name="password" />
+          <input type="email" placeholder="Email" name="email" autoComplete="username"/>
+          <input type="password" placeholder="Password" name="password" autoComplete="current-password"/>
           <button disabled={loading}>{loading ? "Loading..." : "Sign Up"}</button>
         </form>
       </div>
