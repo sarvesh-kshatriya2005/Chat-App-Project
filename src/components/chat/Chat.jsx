@@ -156,7 +156,7 @@ const Chat = () => {
     <div className="chat">
       <div className="top">
         <div className="user">
-          <Avatar username={currentUser.username} size={50}/>
+          <Avatar username={user.username} size={50} />
           <div className="texts">
             <span>{user?.username || "Unknown User"}</span>
             <p>{user?.description || "No description available"}</p>
@@ -195,7 +195,12 @@ const Chat = () => {
               key={index}
               className={isOwnMessage ? "message own" : "message"}
             >
-              <img src={senderAvatar || "./avatar.png"} alt="avatar" />
+              {isOwnMessage ? (
+                <Avatar username={currentUser.username} />
+              ) : (
+                <Avatar username={user.username} />
+              )}
+
               <div className="texts">
                 <p>{message.text}</p>
               </div>

@@ -5,9 +5,16 @@ const getDarkColor = (username) => {
     "#B71C1C", // Dark Red
     "#004D40", // Dark Teal
     "#3E2723", // Dark Brown
-    "#2C3E50", // Dark Gray-Blue
+    "#2C3E50", // Dark GrayBlue
     "#4A148C", // Deep Purple
-    "#880E4F", // Deep Pinkish Red
+    "#880E4F", // Deep PinkishRed
+    "#006064", // Dark Cyan
+    "#1B5E20", // Dark Green
+    "#E65100", // Dark Orange
+    "#3E2723", // Dark Brown
+    "#BF360C", // Deep Orange
+    "#4A148C", // Deep Purple
+    
   ];
 
   let hash = 0;

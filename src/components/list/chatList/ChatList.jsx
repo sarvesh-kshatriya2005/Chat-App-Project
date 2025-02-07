@@ -10,6 +10,7 @@ const Chatlist = () => {
   const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
   const [input, setInput] = useState("");
+  const [showList, setShowList] = useState(false); // Toggle list visibility
 
   const { currentUser } = useUserStore();
   const { chatId, changeChat } = useChatStore();
@@ -39,6 +40,7 @@ const Chatlist = () => {
   }, [currentUser?.id]);
 
   const handleSelect = async (chat) => {
+    setShowList(false); // Hide chat list when a user is selected (mobile)
     const userChats = chats.map(({ user, ...rest }) => rest);
     const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
 
@@ -92,7 +94,7 @@ const Chatlist = () => {
           onClick={() => handleSelect(chat)}
           style={{ backgroundColor: chat?.isSeen ? "transparent" : "#3a3e85a5" }}
         >
-          <Avatar username={chat.user.username} />
+          <Avatar username={chat.user.username} className="avatar"/>
 
           <div className="texts">
             <span>
@@ -100,7 +102,7 @@ const Chatlist = () => {
                 ? "Blocked User"
                 : chat.user?.username}
             </span>
-            <p>{chat.lastMessage || "No message"}</p>
+            <p class="lastMsg">{chat.lastMessage || "No message"}</p>
           </div>
         </div>
       ))}

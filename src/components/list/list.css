@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 0;
+    overflow: scroll;
     padding: 16px;
     position: relative;
   }
@@ -10,12 +11,21 @@
   /* Responsive layout: Hide list container on mobile and show via button */
   @media (max-width: 768px) {
     .list {
-      display: none; /* Hide on mobile */
+      width: 20%;
+      align-items: center;
     }
-  
+    span , h2, .lastMsg{
+      display: none;
+    }
+    .item {
+      width: 100%;
+      height: auto;
+      align-items: last baseline;
+    }
     .chatList {
-      display: block; /* Show chat list in mobile layout when button is clicked */
-      z-index: 1;
+      .search .searchBar{
+        display: none;
+      }
     }
   }
  
