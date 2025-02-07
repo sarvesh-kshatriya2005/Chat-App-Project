@@ -5,7 +5,7 @@ import { useUserStore } from "../../login/lib/userStore";
 import { db } from "../../login/lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useChatStore } from "../../login/lib/chatStore";
-
+import Avatar from "../../Avatar";
 const Chatlist = () => {
   const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
@@ -92,14 +92,8 @@ const Chatlist = () => {
           onClick={() => handleSelect(chat)}
           style={{ backgroundColor: chat?.isSeen ? "transparent" : "#3a3e85a5" }}
         >
-          <img
-            src={
-              chat.user?.blocked?.includes(currentUser.id)
-                ? "./avatar.png"
-                : chat.user?.avatar || "./avatar.png"
-            }
-            alt="User Avatar"
-          />
+          <Avatar username={chat.user.username} />
+
           <div className="texts">
             <span>
               {chat.user?.blocked?.includes(currentUser.id)

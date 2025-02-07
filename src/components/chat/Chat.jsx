@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { signOut } from "firebase/auth"; // Import signOut for logout
 import { auth } from "../login/lib/firebase"; // Import Firebase auth
 import "./chat.css";
+import Avatar from "../Avatar";
 import EmojiPicker from "emoji-picker-react";
 import {
   arrayUnion,
@@ -21,10 +22,10 @@ const Chat = () => {
   const [text, setText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
-  
+
   const { currentUser } = useUserStore();
   const { chatId, user } = useChatStore();
-  
+
   const endRef = useRef(null);
 
   // ✅ Fetch & Listen for Real-Time Block Status
@@ -45,7 +46,10 @@ const Chat = () => {
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
       setChat(res.data());
-      setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+      setTimeout(
+        () => endRef.current?.scrollIntoView({ behavior: "smooth" }),
+        50
+      );
     });
 
     return () => unSub();
@@ -90,7 +94,9 @@ const Chat = () => {
 
         if (userChatSnapShot.exists()) {
           const userChatsData = userChatSnapShot.data();
-          const chatIndex = userChatsData.chats.findIndex((c) => c.chatId === chatId);
+          const chatIndex = userChatsData.chats.findIndex(
+            (c) => c.chatId === chatId
+          );
 
           if (chatIndex >= 0) {
             userChatsData.chats[chatIndex] = {
@@ -134,7 +140,7 @@ const Chat = () => {
       console.error("Error toggling block:", err);
     }
   };
-  
+
   // ✅ Handle Logout
   const handleLogout = async () => {
     try {
@@ -148,10 +154,9 @@ const Chat = () => {
 
   return (
     <div className="chat">
-      {/* Chat Header */}
       <div className="top">
         <div className="user">
-          <img src={user?.avatar || "./avatar.png"} alt="avatar" />
+          <Avatar username={currentUser.username} size={50}/>
           <div className="texts">
             <span>{user?.username || "Unknown User"}</span>
             <p>{user?.description || "No description available"}</p>
@@ -159,7 +164,10 @@ const Chat = () => {
         </div>
 
         {/* More Options Button */}
-        <div className="more-options" onClick={() => setShowOptions(!showOptions)}>
+        <div
+          className="more-options"
+          onClick={() => setShowOptions(!showOptions)}
+        >
           <img src="./more.png" alt="More Options" />
         </div>
       </div>
@@ -178,10 +186,15 @@ const Chat = () => {
       <div className="center">
         {chat?.messages?.map((message, index) => {
           const isOwnMessage = message?.senderId === currentUser?.id;
-          const senderAvatar = isOwnMessage ? currentUser?.avatar : user?.avatar;
+          const senderAvatar = isOwnMessage
+            ? currentUser?.avatar
+            : user?.avatar;
 
           return (
-            <div key={index} className={isOwnMessage ? "message own" : "message"}>
+            <div
+              key={index}
+              className={isOwnMessage ? "message own" : "message"}
+            >
               <img src={senderAvatar || "./avatar.png"} alt="avatar" />
               <div className="texts">
                 <p>{message.text}</p>
@@ -203,14 +216,23 @@ const Chat = () => {
           disabled={isBlocked}
         />
         <div className="emoji-container">
-          <img src="./emoji.png" alt="emoji picker" onClick={() => setOpenEmoji((prev) => !prev)} className="emoji-icon"/>
+          <img
+            src="./emoji.png"
+            alt="emoji picker"
+            onClick={() => setOpenEmoji((prev) => !prev)}
+            className="emoji-icon"
+          />
           {openEmoji && (
             <div className="emoji-picker">
               <EmojiPicker onEmojiClick={handleEmoji} />
             </div>
           )}
         </div>
-        <button className="sendButton" onClick={handleSend} disabled={isBlocked}>
+        <button
+          className="sendButton"
+          onClick={handleSend}
+          disabled={isBlocked}
+        >
           Send
         </button>
       </div>
