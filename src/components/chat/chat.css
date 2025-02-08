@@ -278,6 +278,9 @@
   .chat .top {
     padding: 12px;
   }
+  .chat{
+    width: 80%;
+  }
   .sendButton{
     width: 25%;
   }
