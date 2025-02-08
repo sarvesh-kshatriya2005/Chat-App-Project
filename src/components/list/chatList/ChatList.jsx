@@ -1,16 +1,18 @@
 import AddUser from "./addUser/addUser";
 import "./chatList.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUserStore } from "../../login/lib/userStore";
 import { db } from "../../login/lib/firebase";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useChatStore } from "../../login/lib/chatStore";
 import Avatar from "../../Avatar";
+
 const Chatlist = () => {
   const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
   const [input, setInput] = useState("");
-  const [showList, setShowList] = useState(false); // Toggle list visibility
+  const [showList, setShowList] = useState(false); // Toggle list visibility (mobile)
+  const addUserPopupRef = useRef(null); // Renamed ref to avoid conflicts
 
   const { currentUser } = useUserStore();
   const { chatId, changeChat } = useChatStore();
@@ -18,23 +20,26 @@ const Chatlist = () => {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const unSub = onSnapshot(doc(db, "userchats", currentUser.id), async (res) => {
-      const items = res.data()?.chats || [];
+    const unSub = onSnapshot(
+      doc(db, "userchats", currentUser.id),
+      async (res) => {
+        const items = res.data()?.chats || [];
 
-      const promises = items
-        .filter((item) => item.receiverId) // Only include chats with a valid receiver
-        .map(async (item) => {
-          const userDocRef = doc(db, "users", item.receiverId);
-          const userDocSnap = await getDoc(userDocRef);
-          const user = userDocSnap.exists() ? userDocSnap.data() : null;
-          return { ...item, user };
-        });
+        const promises = items
+          .filter((item) => item.receiverId) // Only include chats with a valid receiver
+          .map(async (item) => {
+            const userDocRef = doc(db, "users", item.receiverId);
+            const userDocSnap = await getDoc(userDocRef);
+            const user = userDocSnap.exists() ? userDocSnap.data() : null;
+            return { ...item, user };
+          });
 
-      const chatData = await Promise.all(promises);
-      setChats(
-        chatData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-      );
-    });
+        const chatData = await Promise.all(promises);
+        setChats(
+          chatData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+        );
+      }
+    );
 
     return () => unSub();
   }, [currentUser?.id]);
@@ -42,7 +47,9 @@ const Chatlist = () => {
   const handleSelect = async (chat) => {
     setShowList(false); // Hide chat list when a user is selected (mobile)
     const userChats = chats.map(({ user, ...rest }) => rest);
-    const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
+    const chatIndex = userChats.findIndex(
+      (item) => item.chatId === chat.chatId
+    );
 
     if (chatIndex >= 0) {
       userChats[chatIndex].isSeen = true;
@@ -64,6 +71,26 @@ const Chatlist = () => {
       c.user.username.toLowerCase().includes(input.toLowerCase()) // Apply search filter
   );
 
+  // ✅ Close AddUser popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        addUserPopupRef.current &&
+        !addUserPopupRef.current.contains(event.target)
+      ) {
+        setAddMode(false);
+      }
+    };
+
+    if (addMode) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [addMode]);
+
   return (
     <div className="chatList">
       <div className="search">
@@ -79,8 +106,8 @@ const Chatlist = () => {
           src={addMode ? "./minus.png" : "./plus.png"}
           alt="Add User"
           className="add"
-          onClick={() => {
-            if (!currentUser) return;
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ Prevents reopening issue
             setAddMode((prev) => !prev);
           }}
         />
@@ -92,9 +119,11 @@ const Chatlist = () => {
           className="item"
           key={chat.chatId}
           onClick={() => handleSelect(chat)}
-          style={{ backgroundColor: chat?.isSeen ? "transparent" : "#3a3e85a5" }}
+          style={{
+            backgroundColor: chat?.isSeen ? "transparent" : "#3a3e85a5",
+          }}
         >
-          <Avatar username={chat.user.username} className="avatar"/>
+          <Avatar username={chat.user.username} className="avatar" />
 
           <div className="texts">
             <span>
@@ -102,14 +131,20 @@ const Chatlist = () => {
                 ? "Blocked User"
                 : chat.user?.username}
             </span>
-            <p class="lastMsg">{chat.lastMessage || "No message"}</p>
+            <p className="lastMsg">{chat.lastMessage || "No message"}</p>
           </div>
         </div>
       ))}
 
-      {addMode && <AddUser />}
+      {/* ✅ Popup closes properly when clicking outside */}
+      {addMode && (
+        <div ref={addUserPopupRef} className="addUser-popup">
+          <AddUser />
+        </div>
+      )}
     </div>
   );
 };
 
 export default Chatlist;
+  

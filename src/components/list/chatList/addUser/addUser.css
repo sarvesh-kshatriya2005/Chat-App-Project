@@ -1,64 +1,100 @@
-.addUser{
-    width: max-content;
-    height: max-content;
+.addUser {
+    width: 300px;
+    max-width: 80%;
+    height: auto;
     padding: 30px;
-    background-color: rgba(35, 26, 76, 0.797);
+    background-color: rgba(35, 26, 76, 0.97);
     border-radius: 14px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left:0;
-    right: 0;
-    margin: auto;
+    position: fixed; /* ✅ Ensure it stays on top */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* ✅ Center it properly */
+    z-index: 1000; /* ✅ Keep it above everything */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
 
-    form{
-        display: flex;
-        gap: 20px;
+/* ✅ Make sure the form inside is properly spaced */
+.addUser form {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
 
-        input{
-            padding: 20px;
-            border-radius: 12px;
-            border: none;
-            outline:none;
-        }
+/* ✅ Input Styling */
+.addUser input {
+    padding: 15px;
+    border-radius: 12px;
+    max-width: 70%;
+    border: none;
+    outline: none;
+    width: 100%;
+}
 
-        button{
-            padding: 20px;
-            border-radius: 15px;
-            background-color: rgba(78, 57, 238, 0.511);
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+.addUser .error{
+    color: rgba(157, 140, 231, 0.842);
+    border: 2px solid rgb(38, 0, 255);
+    border-radius: 20px;
+    font-size: 14px;
+    margin-top: 20px;
+    text-align: center;
+}
+/* ✅ Search Button */
+.addUser button {
+    padding: 15px;
+    border-radius: 15px;
+    background-color: rgba(78, 57, 238, 0.8);
+    color: white;
+    border: none;
+    width: 100px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
-    }
-    .user{
-        margin-top: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+.addUser button:hover {
+    background-color: rgba(78, 57, 238, 1);
+}
 
-        .detail{
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            img{
-                width: 50px;    
-                height: 50px;
-                border-radius: 50%;
-                object-fit: cover;
-            }
-            span{
-                color: white;
-            }
-        }
-        button{
-            padding: 10px;
-            border-radius: 12px;
-            background-color: rgba(78, 57, 238, 0.511);
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+/* ✅ User Info Section */
+.addUser .user {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ✅ User Details */
+.addUser .user .detail {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+/* ✅ User Name */
+.addUser .user .detail span {
+    color: white;
+    font-size: 16px;
+}
+
+/* ✅ Add User Button */
+.addUser .user button {
+    padding: 10px;
+    border-radius: 12px;
+    background-color: rgba(78, 57, 238, 0.8);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.addUser .user button:hover {
+    background-color: rgba(78, 57, 238, 1);
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+    .addUser {
+        width: 90%;
+        padding: 20px;
     }
 }

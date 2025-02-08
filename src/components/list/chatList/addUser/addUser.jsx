@@ -12,6 +12,7 @@ import {
   where,
   getDoc,
 } from "firebase/firestore";
+import Avatar from "../../../Avatar";
 import { useState } from "react";
 import { useUserStore } from "../../../login/lib/userStore";
 
@@ -135,7 +136,7 @@ const AddUser = () => {
       {user && (
         <div className="user">
           <div className="detail">
-            <img src={user.avatar || "./avatar.png"} alt="avatar image" />
+          <Avatar username={user.username} size={50} />
             <span>{user.username}</span>
           </div>
           <button onClick={handleAdd}>Add user</button>

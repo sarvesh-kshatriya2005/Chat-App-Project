@@ -22,6 +22,8 @@ const Chat = () => {
   const [text, setText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [replyMessage, setReplyMessage] = useState(null); // Store the message being replied to
+  const emojiRef = useRef(null); // ✅ Create a reference for the emoji picker
 
   const { currentUser } = useUserStore();
   const { chatId, user } = useChatStore();
@@ -42,6 +44,23 @@ const Chat = () => {
     return () => unSub();
   }, [user?.id, currentUser?.id]);
 
+  // ✅ Handle emoji selection
+  const handleEmoji = (emojiData) => {
+    setText((prev) => prev + emojiData.emoji);
+  };
+
+  // ✅ Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setOpenEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // ✅ Auto-scroll to latest message
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
@@ -54,11 +73,6 @@ const Chat = () => {
 
     return () => unSub();
   }, [chatId]);
-
-  // ✅ Handle emoji selection
-  const handleEmoji = (emojiData) => {
-    setText((prev) => prev + emojiData.emoji);
-  };
 
   // ✅ Handle sending a message (prevent if blocked)
   const handleSend = async (e) => {
@@ -74,9 +88,12 @@ const Chat = () => {
       senderId: currentUser.id,
       text,
       createdAt: new Date(),
+      replyTo: replyMessage ? replyMessage.text : null, // Add reply message
+      replySender: replyMessage ? replyMessage.senderId : null, // Add reply sender
     };
 
     setText(""); // Instantly clear input
+    setReplyMessage(null); // Clear the reply message after sending
 
     try {
       // ✅ Save message in Firebase
@@ -152,6 +169,12 @@ const Chat = () => {
     }
   };
 
+  // Handle message swipe for reply
+  const handleSwipe = (message) => {
+    if (!message.text) return; // Don't allow replies to empty messages
+    setReplyMessage(message);
+  };
+
   return (
     <div className="chat">
       <div className="top">
@@ -194,6 +217,14 @@ const Chat = () => {
             <div
               key={index}
               className={isOwnMessage ? "message own" : "message"}
+              onTouchStart={(e) => (e.target.startX = e.touches[0].clientX)} // Detect swipe start
+              onTouchEnd={(e) => {
+                if (e.changedTouches[0].clientX - e.target.startX > 50) {
+                  // Detect swipe right
+                  handleSwipe(message);
+                }
+              }}
+              onDoubleClick={() => handleSwipe(message)} // Double-click to reply on desktop
             >
               {isOwnMessage ? (
                 <Avatar username={currentUser.username} />
@@ -202,6 +233,15 @@ const Chat = () => {
               )}
 
               <div className="texts">
+                {message.replyTo && (
+                  <div className="reply">
+                    <span>
+                      {message.replySender === currentUser.id ? "You" : "User"}{" "}
+                      replied:
+                    </span>
+                    <p>{message.replyTo}</p>
+                  </div>
+                )}
                 <p>{message.text}</p>
               </div>
             </div>
@@ -212,6 +252,12 @@ const Chat = () => {
 
       {/* Chat Input */}
       <div className="bottom">
+        {replyMessage && (
+          <div className="reply-preview">
+            <span>Replying to: {replyMessage.text}</span>
+            <button onClick={() => setReplyMessage(null)}>✖</button>
+          </div>
+        )}
         <input
           type="text"
           placeholder={isBlocked ? "Can't send messages" : "Type a message..."}
@@ -220,7 +266,8 @@ const Chat = () => {
           onKeyDown={(e) => e.key === "Enter" && handleSend(e)}
           disabled={isBlocked}
         />
-        <div className="emoji-container">
+
+        <div className="emoji-container" ref={emojiRef}>
           <img
             src="./emoji.png"
             alt="emoji picker"
@@ -233,6 +280,7 @@ const Chat = () => {
             </div>
           )}
         </div>
+
         <button
           className="sendButton"
           onClick={handleSend}

@@ -39,8 +39,8 @@ const Avatar = ({ username }) => {
       style={{
         backgroundColor: bgColor,
         color: "white",
-        width: "40px",
         height: "40px",
+        width: "40px",
         borderRadius: "50%",
         display: "flex",
         alignItems: "center",
