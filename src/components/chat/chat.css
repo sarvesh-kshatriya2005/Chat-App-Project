@@ -251,6 +251,7 @@
 .sendButton {
   background-color: #120990c0;
   color: white;
+  width: 5%;
   padding: 8px 16px;
   border: none;
   border-radius: 10px;
