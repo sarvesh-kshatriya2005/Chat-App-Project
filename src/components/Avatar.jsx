@@ -24,7 +24,8 @@ const getDarkColor = (username) => {
   return darkColors[Math.abs(hash) % darkColors.length];
 };
 
-const Avatar = ({ username }) => {
+const Avatar = ({ username,status }) => {
+  const borderColor = status === "online" ? "green" : "darkgray";
   const bgColor = getDarkColor(username);
   const initials = username
     ? username
@@ -47,6 +48,7 @@ const Avatar = ({ username }) => {
         justifyContent: "center",
         fontWeight: "bold",
         fontSize: "16px",
+        border: `3px solid ${borderColor}`,
         textTransform: "uppercase",
       }}
     >

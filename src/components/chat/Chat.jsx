@@ -23,6 +23,7 @@ const Chat = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [replyMessage, setReplyMessage] = useState(null); // Store the message being replied to
+  const [userStatus, setUserStatus] = useState("offline"); // ✅ Track Online/Offline
   const emojiRef = useRef(null); // ✅ Create a reference for the emoji picker
 
   const { currentUser } = useUserStore();
@@ -169,6 +170,32 @@ const Chat = () => {
     }
   };
 
+  // Handle Typing
+  const handleTyping = async () => {
+    if (!chatId || !currentUser) return;
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, {
+      typing: currentUser.id, // Set the user who is typing
+    });
+  };
+
+  // Remove typing indicator when user stops typing
+  const handleStopTyping = async () => {
+    if (!chatId) return;
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, { typing: "" });
+  };
+
+  // Detect typing activity
+  const handleInputChange = (e) => {
+    setText(e.target.value);
+    handleTyping();
+
+    setTimeout(() => {
+      handleStopTyping();
+    }, 3000); // Stops typing status after 3 sec
+  };
+
   // Handle message swipe for reply
   const handleSwipe = (message) => {
     if (!message.text) return; // Don't allow replies to empty messages
@@ -226,12 +253,6 @@ const Chat = () => {
               }}
               onDoubleClick={() => handleSwipe(message)} // Double-click to reply on desktop
             >
-              {isOwnMessage ? (
-                <Avatar username={currentUser.username} />
-              ) : (
-                <Avatar username={user.username} />
-              )}
-
               <div className="texts">
                 {message.replyTo && (
                   <div className="reply">
@@ -244,6 +265,15 @@ const Chat = () => {
                 )}
                 <p>{message.text}</p>
               </div>
+              <p
+                style={{
+                  textAlign: "center",
+                  fontStyle: "italic",
+                  color: "gray",}}>
+                {chat?.typing && chat?.typing !== currentUser.id
+                  ? "Typing..."
+                  : ""}
+              </p>
             </div>
           );
         })}

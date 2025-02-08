@@ -93,12 +93,12 @@
 
 /* 🔹 Chat Messages Section */
 .chat .center {
-  padding: 15px;
+  padding: 10px;
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap:10px;
 }
 
 /* 🔹 Message Styles */
@@ -115,15 +115,9 @@
 }
 
 .message:hover {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
-.message img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-}
 
 .message .texts {
   display: flex;
@@ -136,7 +130,7 @@
 .message .texts p {
   padding: 12px;
   background-color: #1f194bb1;
-  border-radius: 8px;
+  border-radius: 12px;
   font-family: system-ui;
   color: white;
 }
@@ -149,7 +143,7 @@
 .reply-preview {
   background-color: #2a2d4f;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -251,7 +245,7 @@
 .sendButton {
   background-color: #120990c0;
   color: white;
-  width: 5%;
+  width: 10%;
   padding: 8px 16px;
   border: none;
   border-radius: 10px;
@@ -283,6 +277,9 @@
 @media (max-width: 768px) {
   .chat .top {
     padding: 12px;
+  }
+  .sendButton{
+    width: 25%;
   }
 
   .chat .center {

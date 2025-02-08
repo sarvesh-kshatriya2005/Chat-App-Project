@@ -18,7 +18,7 @@ body{
   width:96vw;
   height: 98vh;
   background-color: #0d1645af;
-  border-radius: 18px;
+  border-radius: 48px;
   backdrop-filter: blur(19px) saturate(180%);
   border-color: 1px solid #030406cd;
   display: flex;
